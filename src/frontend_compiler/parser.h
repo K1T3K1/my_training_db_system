@@ -10,10 +10,11 @@ struct parser {
   static void handle_user_input();
 };
 
-struct query {
-  using command = commands::command_types;
+struct query {  
+  query(command _command, std::span<std::string_view> _args) : _command(_command), _args(_args){};
+  query() : _command(command::NONE), _args(std::span<std::string_view>()){}
   command _command;
-  std::span<std::string> _args;
+  std::span<std::string_view> _args;
 };
 
 #endif
