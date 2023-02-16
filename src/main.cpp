@@ -1,4 +1,4 @@
-#include "frontend_compiler/parser.h"
+#include "parser.h"
 
 int main(){
 
