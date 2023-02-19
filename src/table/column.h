@@ -2,56 +2,72 @@
 #define COLUMN_H_
 
 #include <functional>
+#include <memory>
 #include <stdexcept>
 #include <type_traits>
-#include <memory>
 #include <variant>
 
 // Still not decided whether should I choose a template column
 // or polymorphic columns with distinctions for each individual
 // data types
 
-typedef __int128_t integral;
-typedef long double numeric;
-typedef char varchar[255];
-
 template <typename data_t>
-struct column_impl {
-  column_impl<data_t>(std::function<bool(data_t)> _constraint) : constraint(_constraint) {}
-  column_impl<data_t>(std::function<bool(data_t)> _constraint, bool _is_nullable)
-      : constraint(_constraint), is_nullable(_is_nullable) {}
+bool default_constraint(data_t) {
+  return true;
+}
 
-  // This constructor requires to validate whether provided data
-  // satisfies provided constraint. If constraint isn't satisfied
-  // an exception gets thrown. It needs to be handled
-  column_impl<data_t>(std::function<bool(data_t)> _constraint, bool _is_nullable, data_t _value)
-      : constraint(_constraint), is_nullable(_is_nullable) {
-    if (validate_data()) {
-      value = _value;
-    } else {
-      throw std::invalid_argument("Provived data couldn't satisfy column's constraint");
+template <typename data_t, bool nullable = true, bool(constraint)(data_t) = default_constraint>
+struct column {
+  /*  MEMBERS  */
+  static inline std::string constraint_error =
+      std::string("Provided data couldn't satisfy column's constraint");
+  data_t data;
+  bool is_null;
+
+  /*  CONSTRUCTORS  */
+  // Create column without providing data
+  column() : data(), is_null(true) {
+    if (!validate_data()) {
+      throw std::invalid_argument(constraint_error);
     }
   }
 
-  std::function<bool(data_t)> constraint;
-  bool is_nullable = false;
-  data_t value;
-  auto get_column_type_variant(){return std::variant<data_t>();}
+  // Create column and initialize it with data
+  column(data_t data) : data(data), is_null(false) {
+    if (!validate_data()) {
+      throw std::invalid_argument(constraint_error);
+    }
+  }
 
-  bool validate_data() { return constraint(value); }
+  /*  MEMBER FUNCTIONS  */
 
+  // Used to set data to existing column
+  // Data validation is provided while is
+  // this function
+  void set_data(data_t data) {
+    if (validate_data(data)) {
+      this->data = data;
+    } else {
+      throw std::invalid_argument(constraint_error);
+    }
+  }
+
+  // validate existing data
+  [[nodiscard]] bool validate_data() noexcept { return (constraint(data) && (nullable || (!is_null))); }
+  // validate data provided as function parameter
+  [[nodiscard]] bool validate_data(data_t data) noexcept { return (constraint(data) && (nullable || (!is_null))); }
+  [[nodiscard]] data_t get() noexcept { return data; }
+
+  // validate whether provided parameter
+  // matches column's type
   template <typename T>
   bool validate_type(T) {
     return std::is_nothrow_convertible<T, data_t>();
   }
 };
 
-struct column {
-  typedef column_impl<integral> column_int;
-  typedef column_impl<numeric> column_num;
-  typedef column_impl<varchar> column_varchar;
-
-  std::variant<column_int, column_num, column_varchar> column_object;
-};
+typedef __int128_t integral;
+typedef long double numeric;
+typedef char varchar[255];
 
 #endif

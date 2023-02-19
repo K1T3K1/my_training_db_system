@@ -9,18 +9,16 @@
 #include "commands.h"
 
 struct query {
-  query(command _command, std::span<std::string_view> _args) : _command(_command), _args(_args){};
-  query() : _command(command::NONE), _args(std::span<std::string_view>()) {}
+  query(command _command, std::span<std::string> _args) : _command(_command), _args(_args){};
+  query() : _command(command::NONE), _args(std::span<std::string>()) {}
   command _command;
-  std::span<std::string_view> _args;
+  std::span<std::string> _args;
 
   constexpr bool validate_query();
 };
 
 struct parser {
-  std::vector<query> parsed_queries;
   void handle_user_input();
-  void create_expressions();
 };
 
 #endif

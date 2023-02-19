@@ -7,6 +7,7 @@
 #include <string_view>
 #include <variant>
 #include <type_traits>
+#include <array>
 
 enum command { SELECT, FROM, WHERE, JOIN, UNION, CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, NONE };
 

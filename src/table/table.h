@@ -1,24 +1,33 @@
 #ifndef TABLE_H_
 #define TABLE_H_
 
+#include <any>
 #include <span>
 #include <string>
+#include <fmt/core.h>
+
 #include "column.h"
 
-// Both tables and rows will need simple interfaces to be parsed
-// from and to b-trees that will allow to perform fast operations
-// on data
-// Read, Write operations themselves will suffice without these
-// data projections
+template <typename... C>
+struct row {
+  std::tuple<C...> columns;
 
-struct row{
+  row(C&&... c) : columns(std::forward<C>(c)...){}
 
+  template<int index>
+  [[nodiscard]] auto get() {
+    return std::get<index>(columns).get();
+  }
+
+  template<int index, typename data_t>
+  void set_data(data_t data){
+    std::get<index>(columns).set_data(data);
+  }
 };
 
-struct table{
-    std::string name;
-    std::span<std::unique_ptr<column>> columns;
-    std::span<std::unique_ptr<row>> rows;
+template <typename... col_types>
+struct table {
+
 };
 
 #endif

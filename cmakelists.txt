@@ -2,6 +2,44 @@ cmake_minimum_required (VERSION 3.25.2)
 project (db_system)
 
 set(CMAKE_CXX_STANDARD 23)
-add_compile_options(-Wall -Wextra -Wpedantic)
+add_compile_options(-Wall -Werror -Wextra -Wpedantic)
+
+add_executable(${PROJECT_NAME})
 
 add_subdirectory(src)
+set(Boost_USE_STATIC_LIBS       OFF)  # only find static libs
+set(Boost_USE_DEBUG_LIBS        OFF)  # ignore debug libs and
+set(Boost_USE_RELEASE_LIBS       ON)  # only find release libs
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+FIND_PACKAGE(Boost REQUIRED)
+FIND_PACKAGE(fmt REQUIRED)
+if(Boost_FOUND AND fmt_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  include_directories(${fmt_INCLUDE_DIRS})
+  target_include_directories(${PROJECT_NAME}
+                              PRIVATE
+                              ${Boost_INCLUDE_DIRS}
+                              ${fmt_INCLUDE_DIRS})
+
+  target_link_libraries(${PROJECT_NAME}
+                          PRIVATE
+                          ${Boost_LIBRARIES}
+                          Boost::headers
+                          fmt::fmt-header-only)
+endif()
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+add_executable(tests_exec "tests/gtest_main.cpp")
+add_subdirectory(tests)
+include(GoogleTest)
+gtest_discover_tests(tests_exec)      

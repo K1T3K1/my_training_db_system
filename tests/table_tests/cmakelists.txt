@@ -1,0 +1,7 @@
+target_sources(tests_exec
+  PUBLIC
+      ${CMAKE_CURRENT_LIST_DIR}/table_tests.cpp
+      ${CMAKE_CURRENT_LIST_DIR}/column_tests.cpp
+      ${CMAKE_CURRENT_LIST_DIR}/b_tree_tests.cpp)
+
+
