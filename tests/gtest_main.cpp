@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "table_tests/table_tests.cpp"
+#include "table_tests/column_tests.cpp"
 
 int main(int argc, char **argv) {
   printf("Running main() from gtest_main.cpp\n");

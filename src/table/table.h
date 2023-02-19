@@ -9,10 +9,10 @@
 #include "column.h"
 
 template <typename... C>
-struct row {
+struct Row {
   std::tuple<C...> columns;
 
-  row(C&&... c) : columns(std::forward<C>(c)...){}
+  Row(C&&... c) : columns(std::forward<C>(c)...){}
 
   template<int index>
   [[nodiscard]] auto get() {
@@ -26,7 +26,7 @@ struct row {
 };
 
 template <typename... col_types>
-struct table {
+struct Table {
 
 };
 

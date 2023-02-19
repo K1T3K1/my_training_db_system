@@ -8,10 +8,10 @@
 
 #include "commands.h"
 
-struct query {
-  query(command _command, std::span<std::string> _args) : _command(_command), _args(_args){};
-  query() : _command(command::NONE), _args(std::span<std::string>()) {}
-  command _command;
+struct Query {
+  Query(Command _command, std::span<std::string> _args) : _command(_command), _args(_args){};
+  Query() : _command(Command::NONE), _args(std::span<std::string>()) {}
+  Command _command;
   std::span<std::string> _args;
 
   constexpr bool validate_query();

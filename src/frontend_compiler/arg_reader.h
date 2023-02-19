@@ -3,7 +3,7 @@
 
 #include <string>
 
-struct arg_reader {
+struct ArgReader {
   static std::string read_args();
 };
 

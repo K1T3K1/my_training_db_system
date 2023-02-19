@@ -17,7 +17,7 @@ bool default_constraint(data_t) {
 }
 
 template <typename data_t, bool nullable = true, bool(constraint)(data_t) = default_constraint>
-struct column {
+struct Column {
   /*  MEMBERS  */
   static inline std::string constraint_error =
       std::string("Provided data couldn't satisfy column's constraint");
@@ -26,14 +26,14 @@ struct column {
 
   /*  CONSTRUCTORS  */
   // Create column without providing data
-  column() : data(), is_null(true) {
+  Column() : data(), is_null(true) {
     if (!validate_data()) {
       throw std::invalid_argument(constraint_error);
     }
   }
 
   // Create column and initialize it with data
-  column(data_t data) : data(data), is_null(false) {
+  Column(data_t data) : data(data), is_null(false) {
     if (!validate_data()) {
       throw std::invalid_argument(constraint_error);
     }
