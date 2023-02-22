@@ -8,7 +8,7 @@ TEST(RowTests, RowReturnsValidData) {
   constexpr float value_float{25.0};
   std::string value_string{"string_sample"};
 
-  Row<Column<int>, Column<float>, Column<std::string>> test_row{value_int, value_float, value_string};
+  DataRow<Cell<int>, Cell<float>, Cell<std::string>> test_row{value_int, value_float, value_string};
   test_row.set_data<0>(value_int);
   test_row.set_data<1>(value_float);
   test_row.set_data<2>(value_string);

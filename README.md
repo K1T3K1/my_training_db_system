@@ -1,6 +1,8 @@
 # YetAnotherSQLRDBMS
 
-Hi and welcome to the repository. What You are witnessing is me, creating another RDBMS. It's a practice project for me to raise my C++ skills.
+Hi and welcome to the repository. What You are witnessing is me, creating another RDBMS. It's a practice project for me to raise my C++ skills.  
+  
+**This repository was created for article series at https://www.letstalkit.io/ Make sure to visit the blog**
 
 # First release goals
 
@@ -13,5 +15,5 @@ Hi and welcome to the repository. What You are witnessing is me, creating anothe
 
 # Future Goals
   1. **subqueries** handling
-  2. sql **functions** (sum, coalesce etc.
+  2. sql **functions** (sum, coalesce etc.)
   3. benchmarking and optimizations

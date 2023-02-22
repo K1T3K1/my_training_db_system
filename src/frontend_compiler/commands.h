@@ -4,7 +4,6 @@
 #include <boost/algorithm/string.hpp>
 #include <map>
 #include <string>
-#include <string_view>
 #include <variant>
 #include <type_traits>
 #include <array>
@@ -16,7 +15,7 @@ constexpr auto get_command_count() { return get_number_from_command(Command::NON
 const std::array<std::pair<std::string, Command>, get_command_count()> string_command{{
     {"SELECT", Command::SELECT}, {"FROM", Command::FROM},     {"WHERE", Command::WHERE},  {"JOIN", Command::JOIN},
     {"UNION", Command::UNION},   {"CREATE", Command::CREATE}, {"ALTER", Command::ALTER},  {"DROP", Command::DROP},
-    {"INSERT", Command::INSERT}, {"UPDATE", Command::UPDATE}, {"DELETE", Command::DELETE}}};
+    {"INSERT INTO", Command::INSERT}, {"UPDATE", Command::UPDATE}, {"DELETE", Command::DELETE}}};
 
 inline auto get_command_from_string(const std::string user_input) {
   std::string user_input_copy = user_input;

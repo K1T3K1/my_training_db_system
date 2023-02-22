@@ -19,44 +19,23 @@ bool default_constraint(data_t) {
 template <typename data_t, bool nullable = true, bool(constraint)(data_t) = default_constraint>
 struct Column {
   /*  MEMBERS  */
-  static inline std::string constraint_error =
-      std::string("Provided data couldn't satisfy column's constraint");
-  data_t data;
-  bool is_null;
+  std::string name;
 
   /*  CONSTRUCTORS  */
   // Create column without providing data
-  Column() : data(), is_null(true) {
-    if (!validate_data()) {
-      throw std::invalid_argument(constraint_error);
-    }
+  Column(){
+    throw std::invalid_argument("No column name provided");
   }
-
-  // Create column and initialize it with data
-  Column(data_t data) : data(data), is_null(false) {
-    if (!validate_data()) {
-      throw std::invalid_argument(constraint_error);
-    }
-  }
+  Column(std::string name) : name(name) {}
 
   /*  MEMBER FUNCTIONS  */
 
-  // Used to set data to existing column
-  // Data validation is provided while is
-  // this function
-  void set_data(data_t data) {
-    if (validate_data(data)) {
-      this->data = data;
-    } else {
-      throw std::invalid_argument(constraint_error);
-    }
-  }
+  [[nodiscard]] const std::string& get_name() noexcept { return name; }
+  void set_name(std::string& name) noexcept {this->name = name;}
 
-  // validate existing data
-  [[nodiscard]] bool validate_data() noexcept { return (constraint(data) && (nullable || (!is_null))); }
   // validate data provided as function parameter
-  [[nodiscard]] bool validate_data(data_t data) noexcept { return (constraint(data) && (nullable || (!is_null))); }
-  [[nodiscard]] data_t get() noexcept { return data; }
+  [[nodiscard]] bool validate_data(void) noexcept { return nullable;}
+  [[nodiscard]] bool validate_data(data_t data) noexcept { return (constraint(data)); }
 
   // validate whether provided parameter
   // matches column's type
@@ -66,8 +45,57 @@ struct Column {
   }
 };
 
+template <typename data_t>
+struct Cell {
+  data_t data;
+  bool is_null;
+
+  Cell() : is_null(true) {}
+  Cell(data_t data) : data(data), is_null(false) {}
+
+  [[nodiscard]] data_t get() {
+    if (is_null) {
+      throw std::invalid_argument("cell is null");
+    } else {
+      return data;
+    }
+  }
+
+  void set_data(data_t data) noexcept{
+    this->data = data;
+  }
+};
+
 typedef __int128_t integral;
 typedef long double numeric;
 typedef char varchar[255];
+
+template <typename data_t, bool nullable = true, bool(constraint)(data_t) = default_constraint>
+struct TypedColumn{
+  using Column = Column<data_t, nullable, constraint>;
+  TypedColumn(std::string name){
+    c = std::make_unique<Column>(name);
+  }
+  std::unique_ptr<Column> c;
+  std::unique_ptr<Column>& operator->(){return c;}
+};
+
+template <bool nullable = true, bool(constraint)(integral) = default_constraint>
+struct ColumnIntegral : public TypedColumn<integral, nullable, constraint>{
+  using TypedColumn = TypedColumn<integral, nullable, constraint>;
+  ColumnIntegral(std::string name) : TypedColumn(name){}
+};
+
+template <bool nullable = true, bool(constraint)(numeric) = default_constraint>
+struct ColumnNumeric : public TypedColumn<numeric, nullable, constraint>{
+  using TypedColumn = TypedColumn<numeric, nullable, constraint>;
+  ColumnNumeric(std::string name) : TypedColumn(name){}
+};
+
+template <bool nullable = true, bool(constraint)(varchar) = default_constraint>
+struct ColumnVarchar : public TypedColumn<varchar, nullable, constraint>{
+  using TypedColumn = TypedColumn<varchar, nullable, constraint>;
+  ColumnVarchar(std::string name) : TypedColumn(name){}
+};
 
 #endif
